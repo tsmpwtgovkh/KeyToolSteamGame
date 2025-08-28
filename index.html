@@ -2,13 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Steam KeyMaker</title>
+  <title>Steam KeyMaker — Web</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Favicon / PWA icons -->
-  <link rel="icon" type="image/png" href="skm-logo.png">
-  <link rel="apple-touch-icon" href="skm-logo.png">
-
+  <meta name="description" content="Generate secure license keys in the browser (HMAC-SHA256, base64url)">
+  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsSAAALEgHS3X78AAABG0lEQVRYhe2WSw7CMAxFfycAO8kK1p3Qwqg0mT2w8m7j5qGm4oL3kJrGm2V2OicC9f7iE2Qk3rQyqHqM1hV8fELG0vX9GgqgY7o9D1R4pQd3v6s3l7Q0mR4k3oJm3mE3p0o1b8TqIhFQd/2kF1pQWQqjCw0QbR5mQH3w0g8d7m3s7rB0tG3y6o6r1K1v6m7y1C7P2y6j2w0B6p1c2R1wI4o8gkQ6Q9Oq0R0zq6BTzvH9h0GkJ3qRrj4Vgq5c0q0y4W2lGx1e2rY0i4JQmDGAxW7T1zvG1Y9fI8V9eEkR3+oQ3g7jJ/5Wg8Y0f6J1VxZl1nJ1Qf6g9hRk1dYw1kz2p2r6wq2zvQpY9g0GgQv9h2w2f5m6d2X8QX4kqGJ7bQXwZCqkZ8JkQf2QZ2p2c1gk5gAAAABJRU5ErkJggg==">
   <style>
     :root{
       --bg: #0b0f1a;
@@ -16,11 +13,11 @@
       --text: #e5e7eb;
       --muted:#9ca3af;
       --border:#2b3753;
-      --accent:#7c4dff;            /* primary violet */
-      --accent-2:#00d4ff;          /* cyan blend   */
-      --good:#10b981;              /* green */
-      --warn:#f59e0b;              /* amber */
-      --bad:#ef4444;               /* red */
+      --accent:#7c4dff;
+      --accent-2:#00d4ff;
+      --good:#10b981;
+      --warn:#f59e0b;
+      --bad:#ef4444;
       --shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 80px rgba(124,77,255,.15);
       --radius: 16px;
     }
@@ -35,133 +32,75 @@
       letter-spacing:.2px;
     }
     .wrap{max-width:980px;margin:0 auto;padding:28px 22px 40px}
-    header{
-      display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:20px
-    }
-    .brand{
-      display:flex; align-items:center; gap:12px; user-select:none
-    }
-    /* image logo (uses your file skm-logo.png) */
-    .logo{
-      width:36px; height:36px; border-radius:12px;
-      object-fit:cover; object-position:center;
-      box-shadow:0 0 18px rgba(124,77,255,.25);
-    }
-    h1{margin:0;font-size:20px; font-weight:700}
-    .sub{color:var(--muted); font-size:12px; margin-top:2px}
-
-    .card{
-      position:relative;
-      background:var(--panel);
-      border:1px solid transparent;
-      border-radius:var(--radius);
-      padding:16px;
-      box-shadow:var(--shadow);
-      backdrop-filter: blur(10px);
-      margin-bottom:16px;
-    }
-    /* gradient border */
-    .card::before{
-      content:""; position:absolute; inset:0; padding:1px; border-radius:inherit;
-      background: linear-gradient(135deg, rgba(124,77,255,.6), rgba(0,212,255,.6));
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite:xor; mask-composite: exclude; pointer-events:none;
-      opacity:.6;
-    }
-
-    label{display:block; color:var(--muted); font-size:12px; margin:8px 0 6px}
-    input,select,button{font:inherit; color:inherit}
-    .input, .select{
-      width:100%; padding:12px 12px; border-radius:12px; border:1px solid var(--border);
-      background: rgba(8,12,26,.75); outline:none; transition:.15s ease;
-    }
-    .input:focus,.select:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(124,77,255,.25)}
-
-    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    .row3{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
-    .row4{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
-
-    .muted{color:var(--muted)}
-    .small{font-size:12px}
-
-    .btn{
-      border:0; border-radius:12px; padding:10px 14px; cursor:pointer; transition:.15s ease;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color:#0b0f1a; font-weight:700;
-      box-shadow: 0 6px 20px rgba(124,77,255,.35), inset 0 -1px 0 rgba(255,255,255,.25);
-    }
-    .btn:hover{filter:saturate(1.1) brightness(1.02); transform:translateY(-1px)}
+    header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}
+    .brand{display:flex;align-items:center;gap:12px;user-select:none}
+    .logo{width:36px;height:36px;border-radius:12px;object-fit:cover;object-position:center;box-shadow:0 0 18px rgba(124,77,255,.25)}
+    h1{margin:0;font-size:20px;font-weight:700}
+    .sub{color:var(--muted);font-size:12px;margin-top:2px}
+    .card{position:relative;background:var(--panel);border:1px solid transparent;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);backdrop-filter:blur(10px);margin-bottom:16px}
+    .card::before{content:"";position:absolute;inset:0;padding:1px;border-radius:inherit;background:linear-gradient(135deg, rgba(124,77,255,.6), rgba(0,212,255,.6));-webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.6}
+    label{display:block;color:var(--muted);font-size:12px;margin:8px 0 6px}
+    input,button{font:inherit;color:inherit}
+    .input{width:100%;padding:12px 12px;border-radius:12px;border:1px solid var(--border);background:rgba(8,12,26,.75);outline:none;transition:.15s ease}
+    .input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,77,255,.25)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .row4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .muted{color:var(--muted)} .small{font-size:12px}
+    .btn{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;transition:.15s ease;background:linear-gradient(135deg, var(--accent), var(--accent-2));color:#0b0f1a;font-weight:700;box-shadow:0 6px 20px rgba(124,77,255,.35), inset 0 -1px 0 rgba(255,255,255,.25)}
+    .btn:hover{filter:saturate(1.1) brightness(1.02);transform:translateY(-1px)}
     .btn:active{transform:translateY(0)}
-    .btn.secondary{
-      background: rgba(255,255,255,.08); color:var(--text); box-shadow:none; border:1px solid var(--border)
-    }
-    .btn.ghost{ background:transparent; color:var(--muted); border:1px dashed var(--border) }
-    .btn:disabled{opacity:.55; cursor:not-allowed; filter:none; transform:none}
-
-    .inline{display:flex; align-items:center; gap:10px}
-    .chip{padding:8px 10px; border:1px solid var(--border); border-radius:999px;
-      background:rgba(255,255,255,.05); cursor:pointer; user-select:none}
+    .btn.secondary{background:rgba(255,255,255,.08);color:var(--text);box-shadow:none;border:1px solid var(--border)}
+    .btn.ghost{background:transparent;color:var(--muted);border:1px dashed var(--border)}
+    .btn:disabled{opacity:.55;cursor:not-allowed;filter:none;transform:none}
+    .inline{display:flex;align-items:center;gap:10px}
+    .chip{padding:8px 10px;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.05);cursor:pointer;user-select:none}
     .chip:hover{border-color:var(--accent)}
-    .chip.active{border-color:var(--accent); box-shadow:0 0 0 3px rgba(124,77,255,.2) inset}
-
-    .out{
-      white-space:pre-wrap; word-break:break-all;
-      background: rgba(8,12,26,.8); border:1px solid var(--border); border-radius:12px; padding:12px
-    }
-    .keyHead{display:flex; align-items:center; gap:10px; margin-top:8px}
-    .tag{font-size:11px; color:#111; background:linear-gradient(135deg,#34d399,#10b981);
-      border-radius:999px; padding:3px 8px; font-weight:700}
-
-    .switch{display:flex; gap:6px; background:rgba(255,255,255,.06); border:1px solid var(--border);
-      padding:4px; border-radius:14px; width:max-content}
-    .switch>button{border-radius:10px; padding:6px 10px; border:0; background:transparent; color:var(--muted)}
-    .switch>button.active{background:rgba(124,77,255,.25); color:#fff}
-
-    .gridFit{display:grid; grid-template-columns:1fr auto; align-items:center; gap:10px}
-
-    .eye{
-      position:absolute; right:10px; top:34px; width:32px; height:32px; display:grid; place-items:center;
-      cursor:pointer; color:var(--muted);
-    }
+    .chip.active{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,77,255,.2) inset}
+    .out{white-space:pre-wrap;word-break:break-all;background:rgba(8,12,26,.8);border:1px solid var(--border);border-radius:12px;padding:12px}
+    .keyHead{display:flex;align-items:center;gap:10px;margin-top:8px}
+    .tag{font-size:11px;color:#111;background:linear-gradient(135deg,#34d399,#10b981);border-radius:999px;padding:3px 8px;font-weight:700}
+    .switch{display:flex;gap:6px;background:rgba(255,255,255,.06);border:1px solid var(--border);padding:4px;border-radius:14px;width:max-content}
+    .switch>button{border-radius:10px;padding:6px 10px;border:0;background:transparent;color:var(--muted)}
+    .switch>button.active{background:rgba(124,77,255,.25);color:#fff}
+    .gridFit{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px}
+    .eye{position:absolute;right:10px;top:34px;width:32px;height:32px;display:grid;place-items:center;cursor:pointer;color:var(--muted)}
     .eye:hover{color:#fff}
-
-    /* toast */
-    .toast{
-      position:fixed; right:22px; bottom:22px; background:#0f172a; border:1px solid var(--border);
-      border-radius:12px; padding:12px 14px; box-shadow:var(--shadow); opacity:0; transform:translateY(8px);
-      transition:.25s ease; max-width:480px
-    }
-    .toast.show{opacity:1; transform:translateY(0)}
+    .toast{position:fixed;right:22px;bottom:22px;background:#0f172a;border:1px solid var(--border);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);transition:.25s ease;max-width:480px}
+    .toast.show{opacity:1;transform:translateY(0)}
     .toast .ok{color:var(--good)} .toast .bad{color:var(--bad)} .toast .warn{color:var(--warn)}
+    .warnBox{border:1px dashed var(--warn);padding:8px 10px;border-radius:10px;background:rgba(245,158,11,.08);color:#f8d26a}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div class="brand">
-        <!-- Use your provided image as logo -->
         <img src="skm-logo.png" class="logo" alt="Steam KeyMaker logo">
         <div>
-          <h1>Steam KeyMaker</h1>
-          <div class="sub">Generate secure license keys (HMAC-SHA256, base64url)</div>
+          <h1>Steam KeyMaker (Web)</h1>
+          <div class="sub">Generate secure license keys (HMAC-SHA256, base64url) — works fully in browser</div>
         </div>
       </div>
-
       <div class="inline">
         <button id="theme" class="btn secondary" title="Toggle theme">Theme</button>
-        <a id="docs" class="btn ghost" href="#" onclick="alert('KeyMaker is for developer use only.\nKeep your SECRET private.');return false;">Info</a>
+        <button id="docs" class="btn ghost" title="About">Info</button>
       </div>
     </header>
+
+    <section class="card warnBox" id="httpsWarn" style="display:none">
+      For security, Web Crypto only works on HTTPS or <code>http://localhost</code>. Please host this file on a website or run a local server.<br>
+      Tip: <code>python3 -m http.server 8080</code> then open <code>http://localhost:8080</code>.
+    </section>
 
     <!-- SECRET -->
     <section class="card">
       <div class="gridFit">
         <div>
-          <label>SECRET (ត្រូវតែដូចគ្នាជាមួយ <b>main.js</b>)</label>
+          <label>SECRET (ត្រូវតែដូចគ្នា ជាមួយ App)</label>
           <input id="secret" type="password" class="input" placeholder="Enter SECRET (min 8 chars)">
           <div id="eye" class="eye" title="Show/Hide">👁️</div>
-          <label class="small"><input type="checkbox" id="remember"> Remember on this computer</label>
+          <label class="small"><input type="checkbox" id="remember"> Remember on this device</label>
         </div>
         <div class="inline" style="align-self:flex-end">
           <button id="genSecret" class="btn secondary" title="Generate random secret">Generate secret</button>
@@ -193,23 +132,12 @@
         </div>
       </div>
 
-      <!-- mode: duration -->
       <div id="durationPanel">
         <div class="row3">
-          <div>
-            <label>Days</label>
-            <input id="days" type="number" min="0" class="input" value="30">
-          </div>
-          <div>
-            <label>Months</label>
-            <input id="months" type="number" min="0" class="input" value="0">
-          </div>
-          <div>
-            <label>Years</label>
-            <input id="years" type="number" min="0" class="input" value="0">
-          </div>
+          <div><label>Days</label><input id="days" type="number" min="0" class="input" value="30"></div>
+          <div><label>Months</label><input id="months" type="number" min="0" class="input" value="0"></div>
+          <div><label>Years</label><input id="years" type="number" min="0" class="input" value="0"></div>
         </div>
-
         <label style="margin-top:10px">Quick picks</label>
         <div class="row4">
           <div class="chip" data-pick="7d">7 days</div>
@@ -221,7 +149,6 @@
         </div>
       </div>
 
-      <!-- mode: exact date -->
       <div id="datePanel" style="display:none">
         <div class="row">
           <div>
@@ -263,13 +190,17 @@
   </div>
 
   <script>
+    /* =================== Utilities (UI) =================== */
     const $ = id => document.getElementById(id);
-    const qs = sel => document.querySelector(sel);
     const qsa = sel => [...document.querySelectorAll(sel)];
-
     const state = { key:null, mode:'duration' };
 
-    // Theme toggle (persist)
+    function toast(msg, tone='ok'){
+      const t = $('toast'); t.innerHTML = '<span class=\"'+tone+'\">'+msg+'</span>';
+      t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2000);
+    }
+
+    // Theme toggle
     const themeBtn = $('theme');
     const setTheme = t => document.documentElement.style.setProperty('--bg', t==='light' ? '#f8fafc' : '#0b0f1a');
     themeBtn.addEventListener('click', ()=>{
@@ -277,34 +208,27 @@
       setTheme(dark ? 'light' : 'dark');
     });
 
-    // Secret show/hide
-    $('eye').addEventListener('click', ()=>{
-      const s = $('secret');
-      s.type = (s.type === 'password') ? 'text' : 'password';
+    // Info
+    $('docs').addEventListener('click', ()=>{
+      alert('Steam KeyMaker (Web)\\n\\n• Uses in-browser Web Crypto (HMAC-SHA256).\\n• Format: SKM.[base64url(payload)].[base64url(signature)] where signature = HMAC(secret, payloadB64).\\n• For production, keep SECRET on server; this page is for controlled/internal use.');
     });
 
-    // Remember secret
-    (()=>{ const s = localStorage.getItem('km_secret'); if(s){ $('secret').value = s; $('remember').checked = true; }})();
-    $('remember').addEventListener('change', e=>{
-      if(e.target.checked) localStorage.setItem('km_secret', $('secret').value || '');
-      else localStorage.removeItem('km_secret');
-    });
-    $('secret').addEventListener('input', ()=>{
-      if($('remember').checked) localStorage.setItem('km_secret', $('secret').value || '');
-    });
+    // SECRET show/hide + remember
+    $('eye').addEventListener('click', ()=>{ const s = $('secret'); s.type = s.type==='password' ? 'text' : 'password'; });
+    (function initSecret(){
+      const s = localStorage.getItem('km_secret'); if(s){ $('secret').value = s; $('remember').checked = true; }
+      $('remember').addEventListener('change', e=>{
+        if(e.target.checked) localStorage.setItem('km_secret', $('secret').value || '');
+        else localStorage.removeItem('km_secret');
+      });
+      $('secret').addEventListener('input', ()=>{ if($('remember').checked) localStorage.setItem('km_secret', $('secret').value || ''); });
+    })();
 
-    // Generate strong secret
-    $('genSecret').addEventListener('click', ()=>{
-      const rand = (()=>{
-        const arr = crypto.getRandomValues(new Uint32Array(6));
-        return btoa(String.fromCharCode(...new Uint8Array(arr.buffer)))
-          .replace(/[^a-zA-Z0-9]/g,'')
-          .slice(0,36);
-      })();
-      $('secret').value = `SK-${rand}`;
-      if($('remember').checked) localStorage.setItem('km_secret', $('secret').value);
-      toast('New secret generated (remember to update your app main.js too).','warn');
-    });
+    // HTTPS warning
+    (function httpsWarn(){
+      const ok = window.isSecureContext || location.hostname === 'localhost';
+      $('httpsWarn').style.display = ok ? 'none' : '';
+    })();
 
     // Mode switch
     function setMode(m){
@@ -337,22 +261,77 @@
       if(!v){ $('datePreview').textContent = '—'; return; }
       const d = new Date(v+'T23:59:59');
       const days = Math.max(0, Math.ceil((d - new Date()) / 86400000));
-      $('datePreview').textContent = `≈ ${days} day(s) from now · ${d.toDateString()}`;
+      $('datePreview').textContent = '≈ '+days+' day(s) from now · '+d.toDateString();
     }
     $('expiryDate').addEventListener('input', updateDatePreview);
 
-    // Simple toast
-    function toast(msg, tone='ok'){
-      const t = $('toast'); t.innerHTML = `<span class="${tone}">${msg}</span>`;
-      t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1800);
+    // Persist some fields
+    ['name','hwid','days','months','years','expiryDate'].forEach(id=>{
+      const k='km_'+id, el=$(id); const v=localStorage.getItem(k); if(v!==null) el.value=v;
+      el.addEventListener('input', ()=>localStorage.setItem(k, el.value));
+    });
+
+    // Default expiry date = +30d
+    (function initDate(){
+      const d = new Date(Date.now()+30*86400000); const pad=n=>String(n).padStart(2,'0');
+      $('expiryDate').value = d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+      updateDatePreview();
+    })();
+
+    /* =================== Crypto Helpers =================== */
+    const enc = new TextEncoder();
+    function base64urlFromBytes(bytes){
+      let bin=''; for(const b of bytes){ bin += String.fromCharCode(b); }
+      return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    }
+    function addDuration({days=0, months=0, years=0}){
+      const now = new Date(); const exp = new Date(now);
+      exp.setFullYear(exp.getFullYear() + (+years||0));
+      exp.setMonth(exp.getMonth() + (+months||0));
+      exp.setDate(exp.getDate() + (+days||0));
+      return exp;
+    }
+    async function hmacSha256Base64url(secret, dataStr){
+      const key = await crypto.subtle.importKey('raw', enc.encode(secret), {name:'HMAC', hash:'SHA-256'}, false, ['sign']);
+      const sig = await crypto.subtle.sign('HMAC', key, enc.encode(dataStr));
+      return base64urlFromBytes(new Uint8Array(sig));
     }
 
-    // Generate
+    /* =================== Key API (Browser) =================== */
+    const KeyAPI = {
+      async generate({secret, name, hwid, days=0, months=0, years=0}){
+        if(!secret || secret.length < 8) return { ok:false, error:'SECRET too short' };
+        const now = new Date();
+        const exp = addDuration({days, months, years});
+        const payload = {
+          v:1,
+          name: (name||'').trim() || null,
+          hwid: (hwid||'').trim() || null,
+          iat: Math.floor(now.getTime()/1000),
+          exp: Math.floor(exp.getTime()/1000),
+        };
+        const payloadBytes = enc.encode(JSON.stringify(payload));
+        const payloadB64 = base64urlFromBytes(payloadBytes);
+        const sigB64 = await hmacSha256Base64url(secret, payloadB64);
+        const key = 'SKM.'+payloadB64+'.'+sigB64;
+        return { ok:true, key, payload, expISO: exp.toISOString() };
+      },
+      async saveKey(key){
+        try{
+          const a = document.createElement('a');
+          a.download = 'license.key';
+          a.href = URL.createObjectURL(new Blob([key], {type:'text/plain'}));
+          a.click();
+          return { canceled:false, filePath:'license.key' };
+        }catch{ return { canceled:true }; }
+      }
+    };
+
+    /* =================== Main Actions =================== */
     $('generate').addEventListener('click', async ()=>{
       const secret = $('secret').value;
       if(!secret || secret.length < 8) return toast('Please enter a valid SECRET (≥ 8 chars).','bad');
 
-      // compute duration
       let days = Number($('days').value||0), months = Number($('months').value||0), years = Number($('years').value||0);
       if(state.mode==='date'){
         const dStr = $('expiryDate').value;
@@ -362,22 +341,19 @@
         days = diffDays; months = 0; years = 0;
       }
 
-      const res = await window.KeyAPI.generate({
-        secret,
-        name: $('name').value,
-        hwid: $('hwid').value,
-        days, months, years
-      });
-
-      if(!res.ok){ toast(res.error || 'Failed to generate.','bad'); return; }
-      state.key = res.key;
-      $('key').textContent = res.key;
-      $('preview').textContent = JSON.stringify({ payload: res.payload, expISO: res.expISO }, null, 2);
-      $('copyInline').disabled = $('copyMain').disabled = $('saveKey').disabled = false;
-      toast('Key generated.','ok');
+      try{
+        const res = await KeyAPI.generate({ secret, name:$('name').value, hwid:$('hwid').value, days, months, years });
+        if(!res.ok) return toast(res.error || 'Failed to generate.','bad');
+        state.key = res.key;
+        $('key').textContent = res.key;
+        $('preview').textContent = JSON.stringify({ payload: res.payload, expISO: res.expISO }, null, 2);
+        $('copyInline').disabled = $('copyMain').disabled = $('saveKey').disabled = false;
+        toast('Key generated.','ok');
+      }catch(err){
+        toast(String(err),'bad');
+      }
     });
 
-    // Copy buttons
     async function doCopy(){
       if(!state.key) return;
       try{
@@ -386,35 +362,17 @@
         setTimeout(()=>$('copiedTip').style.display='none', 1200);
         toast('Copied to clipboard.');
       }catch{
-        toast('Clipboard unavailable','bad');
+        toast('Clipboard unavailable (HTTPS only).','bad');
       }
     }
     $('copyInline').addEventListener('click', doCopy);
     $('copyMain').addEventListener('click', doCopy);
 
-    // Save .key
     $('saveKey').addEventListener('click', async ()=>{
       if(!state.key) return;
-      const r = await window.KeyAPI.saveKey(state.key);
+      const r = await KeyAPI.saveKey(state.key);
       if(!r?.canceled) toast('Saved: '+r.filePath,'ok');
     });
-
-    // Persist a few fields (quality of life)
-    const persistIds = ['name','hwid','days','months','years','expiryDate'];
-    persistIds.forEach(id=>{
-      const k='km_'+id, el=$(id); const v=localStorage.getItem(k); if(v!==null) el.value=v;
-      el.addEventListener('input', ()=>localStorage.setItem(k, el.value));
-    });
-
-    // Set default expiry date = +30d
-    (function initDate(){
-      const d = new Date(Date.now()+30*86400000); const pad=n=>String(n).padStart(2,'0');
-      $('expiryDate').value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-      updateDatePreview();
-    })();
-
-    // Helper used for secret generation (browser crypto via Electron)
-    const crypto = window.crypto || { getRandomValues:(arr)=>{ for(let i=0;i<arr.length;i++) arr[i]=Math.random()*0xffffffff|0; return arr; } };
   </script>
 </body>
 </html>
